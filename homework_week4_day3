@@ -22,9 +22,8 @@ SELECT first_name, last_name, amount
 FROM customer
 JOIN payment
 ON payment.customer_id = customer.customer_id
-GROUP BY first_name, last_name, amount
-HAVING amount > 6.99;
---Answer: There are 992 payments above $6.99. The above query will provide you with the customer
+WHERE amount > 6.99;
+--Answer: There are 1406 payments above $6.99. The above query will provide you with the customer
 --first name, last name, and payment amount.
 
 --Question 3: Show all customer names who have made payments over $175 (use subqueries).
