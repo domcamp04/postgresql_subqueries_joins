@@ -1,0 +1,132 @@
+--HOMEWORK WEEK4 DAY3
+
+--Question 1: List all customers who live in TEXAS (use JOINS)
+SELECT first_name, last_name, district
+FROM address
+JOIN customer
+ON customer.address_id = address.address_id
+GROUP BY first_name, last_name, district
+HAVING district = 'Texas';
+
+SELECT * FROM address;
+
+SELECT * FROM customer;
+--checking to see if I get the same count for texas w/o customer information.
+SELECT address_id
+FROM address
+WHERE district = 'Texas';
+--Answer: Bryan Hardison, Ian Still, Jennifer Davis, Kim Cruz, Richard Mccrary. Total of 5.
+
+--Question 2: Get all payments above $6.99 with the Customer's full name
+SELECT first_name, last_name, amount
+FROM customer
+JOIN payment
+ON payment.customer_id = customer.customer_id
+GROUP BY first_name, last_name, amount
+HAVING amount > 6.99;
+--Answer: There are 992 payments above $6.99. The above query will provide you with the customer
+--first name, last name, and payment amount.
+
+--Question 3: Show all customer names who have made payments over $175 (use subqueries).
+SELECT first_name, last_name, customer_id
+FROM customer
+WHERE customer_id IN (
+	SELECT customer_id
+	FROM payment
+	GROUP BY customer_id
+	HAVING SUM(amount) > 175
+	ORDER BY SUM(amount) DESC
+);
+--Checking to see if I got the same number of customers
+SELECT customer_id
+FROM payment
+GROUP BY customer_id
+HAVING SUM(amount) > 175;
+--Answer: The customers that have made payments over $175 are Rhonda Kennedy, Clara Shaw, 
+--Eleanor Hunt, Marlon Snyder, Tommy Collazo, and Karl Seal. A total of 6.
+
+
+--Question 4: List all customers that live in Nepal (use the city table)
+SELECT first_name, last_name
+FROM customer
+JOIN address
+ON address.address_id = customer.address_id
+JOIN city
+ON city.city_id = address.city_id
+WHERE city = 'Nepal';
+
+SELECT *
+FROM address
+ORDER BY district;
+
+Select * 
+FROM city;
+--Answer: Nepal is not a city or district in any table so no customers live in Nepal. Tricky Tricky!
+
+--Question 5: Which staff member had the most transactions?
+SELECT first_name, last_name, COUNT(rental_id) AS transactions
+FROM staff
+JOIN rental
+ON staff.staff_id = rental.staff_id
+GROUP BY first_name, last_name
+--Answer: Mike Hillyer had the most transactions with 8040 while Jon Stephens had 8004.
+
+--Question 6: What film had the most actors in it?
+SELECT film.title, film_actor.film_id, COUNT(*)
+FROM film_actor
+JOIN actor
+ON film_actor.actor_id = actor.actor_id
+JOIN film
+ON film.film_id = film_actor.film_id
+GROUP BY film.title, film_actor.film_id
+HAVING COUNT(*) >10
+ORDER BY COUNT (*) DESC;
+
+--Checking the list to see if 15 actors were in Labs Cincinatti
+SELECT *
+FROM film_actor
+ORDER BY film_id 
+OFFSET 2700
+
+--Answer the film that had the most actors is Lambs Cincinatti film_id 508 with 15 actors
+
+--Question 7: What actor has been in the least movies?
+SELECT actor.first_name, actor.last_name, film_actor.actor_id, COUNT(film_id)
+FROM actor
+JOIN film_actor
+ON actor.actor_id = film_actor.actor_id
+GROUP BY actor.first_name, actor.last_name, film_actor.actor_id
+HAVING COUNT(film_id) < 20
+ORDER BY COUNT(film_id);
+--Answer: The actress that has been in the lease movies is Emily Dee with 14 screen appearances.
+
+--Question 8: How many districts have more than 5 customers in it?
+SELECT district
+FROM customer
+JOIN address
+ON address.address_id = customer.address_id
+GROUP BY district
+HAVING COUNT(address_id) > 5
+ORDER BY COUNT(address_id);
+--TRIED USING JOIN AND IT DIDNT GO VERY WELL! cant pre-pen COUNT(address_id) so it keeps saying is ambiguous.
+--SUBQUERY below worked much better.
+
+SELECT district, COUNT(address_id)
+FROM address
+WHERE city_id IN (
+	SELECT city_id
+	FROM city
+	GROUP BY city_id
+)
+GROUP BY district
+HAVING COUNT(*) > 5
+ORDER BY COUNT(*)DESC;
+
+--Answer: There are 9 districts with more than 5 customers in it. Buenos Aires(10), West Bengali(9), Shandong(9), California(9),
+--So Paulo(8), Uttar Pradesh(8), England(7), Maharashtra(7), Souther Tagalog(6).
+
+
+
+
+
+
